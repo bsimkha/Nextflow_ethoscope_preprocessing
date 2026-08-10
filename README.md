@@ -112,7 +112,7 @@ Upon a successful run, `Output` direcotry is generated. This contains separate s
     *  `xxx_activity_details.csv`: Contains information on each bout of activity
     *  `xxx_rest_details.csv`: Contains information on each bout of rest (inactivity < 5 min)
     *  `xxx_missing_details.csv`: Contains information on each bout of missed recording that was not imputed by rethomics
-* `3_Bout_summary`: Contains summaries for respective phenotype(s).
+* `3_Bout_summary`: Contains individual-level summaries for respective phenotype(s). These files are generally used in statistical analyses after they have been filtered for dead flies.
 * `4_Last_timestamp`: Contains time stamp for last recorded activity for each individual. This can be used for manual dead fly identification.
 
 <pre>
