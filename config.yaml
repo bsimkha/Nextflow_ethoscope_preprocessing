@@ -1,0 +1,17 @@
+# Directory containing experimental folders (each folder contains a results/ directory)
+input_dir: "<path/to/directory/containing/Ethoscope/db/files>"
+
+# Number of CPU threads to use for parallel processing
+threads: <number of threads (1-8), Eg: 8>
+
+# Directory containing user-installed R packages
+lib: "<path/to/R/libraries>"
+
+# Experimental settings (24-hour format)
+zt_0: <light-on time for setup day, Eg: 7.0>          # Time when lights turn on (ZT0)
+start_time: <Experiment start time relative to ZT0, Eg: 17 if midnight post-setup>   # ZT at which analysis begins (hours)
+n_days: <Experimental window, Eg: 5>          # Number of days to analyze
+time_zone: <Time zone, Eg: -5 if EST>    # Relative to GMT (hours)
+
+# Independent variables
+ind_var: "<Var1, Var2, Var3....VarN, Eg: Genotype, Sex, Rep, Block>"  #Explanatory variables from Metadata files
