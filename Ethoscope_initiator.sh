@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --partition=<partition>
 #SBATCH --time=30-00:00:00
-#SBATCH --mem=2G
+#SBATCH --mem=16G
 #SBATCH --output=<path/to/working/directory>/log/output_%j.txt
 #SBATCH --error=<path/to/working/directory>/log/error_%j.txt
 #SBATCH --mail-type=all
