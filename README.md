@@ -1,10 +1,10 @@
 # Ethoscope pre-processing pipeline
-This pipeline was built in **Nextflow** to process the **.db** files generated from Ethoscope monitors (Geissmann et. al., https://doi.org/10.1371/journal.pbio.2003026). The pipeline can simultaneously process multiple experimental blocks by automatically pairing metadata files with the corresponding results folder. This pipeline is compatible with a local computer as well as with a HPC cluster.
+This pipeline was built in **Nextflow** to process the `.db` files generated from Ethoscope monitors (Geissmann et. al., https://doi.org/10.1371/journal.pbio.2003026). The pipeline can simultaneously process multiple experimental blocks by automatically pairing metadata files with the corresponding results folder. This pipeline is compatible with a local computer as well as with a HPC cluster.
 
 ## Overview
 The pipeline automates the following steps (Rethomics, https://rethomics.github.io/):  
 
-**Data linking** - links metadata files with **.db** files  
+**Data linking** - links metadata files with `.db` files  
 **Data loading** - loads data into R  
 **Data preprocessing** - generates data into **10 s** epochs  
 **Phase analysis** - partitions data into **day** and **night**  
@@ -93,13 +93,20 @@ Before running the pipeline, please make sure you:
 ## Running the pipeline
 Use the following script to run the pipeline
 ### Local users
+Running pipeline:
 ```
 nextflow run ./Scripts/Ethoscope_nextflow.nf \
     -params-file ./config.yaml
 ```
+Nextflow usually shows workflow progress while running
 ### HPC users
+Running pipeline:
 ```
 sbatch Ethoscope_initiator.sh
+```
+Tracking progress:
+```
+squeue -u <username>
 ```
 
 ## Output
@@ -113,7 +120,8 @@ Upon a successful run, `Output` direcotry is generated. This contains separate s
     *  `xxx_rest_details.csv`: Contains information on each bout of rest (inactivity < 5 min)
     *  `xxx_missing_details.csv`: Contains information on each bout of missed recording that was not imputed by rethomics
 * `3_Bout_summary`: Contains individual-level summaries for respective phenotype(s). These files are generally used in statistical analyses after they have been filtered for dead flies.
-* `4_Last_timestamp`: Contains time stamp for last recorded activity for each individual. This can be used for manual dead fly identification.
+* `4_Last_timestamp`: Contains time stamp for last recorded activity for each individual. This can be used for dead fly identification.    
+**Note:** It is generally recommended to manually identify any dead flies at the end of the experiment, and remove them from the dataset.
 
 <pre>
 Output
