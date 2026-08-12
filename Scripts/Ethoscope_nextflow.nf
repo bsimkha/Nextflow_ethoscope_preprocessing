@@ -48,7 +48,7 @@ process LOAD_DATA {
 process RUN_BOUT_ANALYSIS {
     tag "$exp"
     cpus params.threads
-    memory 2.GB
+    memory 16.GB
     stageInMode 'symlink'
 
     publishDir { "${projectDir}/../Output/${exp}/2_Bout_details" },
@@ -83,7 +83,7 @@ process RUN_BOUT_ANALYSIS {
 process LAST_TIMESTAMP {
     tag "$exp"
     cpus params.threads
-    memory 2.GB
+    memory 16.GB
     stageInMode 'symlink'
 
     publishDir { "${projectDir}/../Output/${exp}/4_Last_timestamp" },

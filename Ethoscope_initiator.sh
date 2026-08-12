@@ -2,6 +2,7 @@
 #
 #SBATCH --job-name=<job name>
 #SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
 #SBATCH --partition=<partition>
 #SBATCH --time=30-00:00:00
 #SBATCH --mem=16G
