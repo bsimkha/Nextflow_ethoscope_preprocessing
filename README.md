@@ -113,7 +113,7 @@ squeue -u <username>
 Upon a successful run, `Output` direcotry is generated. This contains separate sub-directories for each experimental block. Each sub-directory contains 4 sub-directories:  
 * `1_Missing`: Contains information on missing data files, and missing data points within each file
     * `xxx_missing_monitor_data.csv`: Monitors in `xxx_metadata.csv` that do not have `.db` files
-    * `xxx_missing_and_imputed_processed_data_summary.csv`: Provides inforamtion on how much data was imputed by Rethomics for monitors found in `xxx_metadata.csv`
+    * `xxx_missing_and_imputed_processed_data_summary.csv`: Provides inforamtion on how much data was imputed by Rethomics for monitors found in `xxx_metadata.csv`. Details of missing bins are available in `Output/2_Bout_details/xxx_missing_data_details.csv` and `Output/3_Bout_summary/xxx_missing_data_summary.csv`
 * `2_Bout_details`: Contains bout length for each bout of:
     * `xxx_sleep_details.csv`: Contains inforamtion on each bout of sleep (inactivity > 5 min)
     *  `xxx_activity_details.csv`: Contains information on each bout of activity
