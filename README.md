@@ -67,7 +67,7 @@ input_dir
 **NOTE**: This version of pipeline only works if the results directories are named "results". Other forms do not work
 
 ### Metadata files
-Metadata files are `.csv` files that contain metadata information about the experiment. For scalability purposes, metadata files **must** start with the same name as the experimental block folder in the input directory, followed by `_metadata`.  
+Metadata files are `.csv` files that contain metadata information about the experiment. For scalability purposes, metadata filenames **must** start with the same name as the experimental block folder in the input directory, followed by `_metadata`.  
 Example: `Experiment_1_metadata.csv`, `Experiment_2_metadata.csv`, `Experiment_3_metadata.csv`
 
 
