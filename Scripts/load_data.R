@@ -37,6 +37,27 @@ if ("date" %in% names(Metadata)) {
   Metadata[, date := as.Date(date, format = "%m/%d/%Y")]
 }
 
+#Generate file with information on start time to adjust date based on time zone
+results_info <- list_result_files(file.path(input_dir,"results"))
+result_info[, hour := as.numeric(format(datetime, "%H")) + #Convert start time to hours to match the time_zone
+              as.numeric(format(datetime, "%M")) / 60 +
+              as.numeric(format(datetime, "%S")) / 3600]
+
+#Fix date in metadata based on time zone (if needed)
+if (time_zone < 0 & any(result_info$hour < abs(time_zone))) {
+  Metadata[
+    machine_name %in% result_info[hour < abs(time_zone), machine_name],
+    date := date + lubridate::days(1) #Add 1 day to local date
+  ]
+}
+
+if (time_zone > 0 & any(result_info$hour >= (24 - time_zone))) {
+  Metadata[
+    machine_name %in% result_info[hour >= (24 - time_zone), machine_name],
+    date := date - lubridate::days(1) #Subtract 1 day from local date
+  ]
+}
+
 # Link metadata to result files
 Metadata_found <- link_ethoscope_metadata(Metadata, result_dir = results_dir)
 Metadata_missing <- Metadata[!machine_name %in% Metadata_found$machine_name]
