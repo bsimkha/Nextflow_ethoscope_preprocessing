@@ -38,7 +38,7 @@ if ("date" %in% names(Metadata)) {
 }
 
 #Generate file with information on start time to adjust date based on time zone
-results_info <- list_result_files(file.path(input_dir,"results"))
+result_info <- list_result_files(results_dir)
 result_info[, hour := as.numeric(format(datetime, "%H")) + #Convert start time to hours to match the time_zone
               as.numeric(format(datetime, "%M")) / 60 +
               as.numeric(format(datetime, "%S")) / 3600]
@@ -122,6 +122,7 @@ Missing_data <- dt_trimmed %>%
 # Save intermediates
 saveRDS(dt_trimmed, file.path(outdir, paste0(exp_id, "_dt_trimmed.rds")))
 saveRDS(Metadata_found, file.path(outdir, paste0(exp_id, "_metadata.rds")))
+saveRDS(result_info, file.path(outdir, paste0(exp_id, "_result_info.rds")))
 
 # Save QC outputs
 fwrite(Metadata_missing, file.path(outdir, paste0(exp_id, "_missing_monitor_data.csv")))
