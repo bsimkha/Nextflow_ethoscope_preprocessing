@@ -10,7 +10,7 @@ params.time_zone   = params.time_zone ?: -5.0
 process LOAD_DATA {
     tag "$exp"
     cpus params.threads
-    memory 8.GB
+    memory 16.GB
     stageInMode 'symlink'
 
     publishDir { "${projectDir}/../Output/${exp}/1_Missing" },
@@ -26,6 +26,13 @@ process LOAD_DATA {
           path("${exp}_dt_trimmed.rds"),
           path("${exp}_metadata.rds"),
           emit: loaded
+
+    tuple val(exp),
+          path("${exp}_dt_trimmed.rds"),
+          path("${exp}_metadata.rds"),
+          path("${exp}_result_info.rds"),
+          emit: timestamp
+
 
     path "${exp}_missing_monitor_data.csv"
     path "${exp}_missing_and_imputed_processed_data_summary.csv"
@@ -86,13 +93,13 @@ process LAST_TIMESTAMP {
     memory 16.GB
     stageInMode 'symlink'
 
-    publishDir { "${projectDir}/../Output/${exp}/4_Last_timestamp" },
+    publishDir { "${projectDir}/../Output/${exp}/4_Timestamps" },
                mode: 'copy',
                pattern: "*.csv",
                overwrite: true
 
     input:
-    tuple val(exp), path(dt_trimmed_rds), path(metadata_rds)
+    tuple val(exp), path(dt_trimmed_rds), path(metadata_rds), path(result_info)
 
     output:
     path "${exp}_last_timestamp.csv"
@@ -102,7 +109,10 @@ process LAST_TIMESTAMP {
     Rscript "${projectDir}/last_timestamp.R" \
       --dt_trimmed "${dt_trimmed_rds}" \
       --metadata "${metadata_rds}" \
+      --result_info "${result_info}" \
       --exp_id "${exp}" \
+      --time_zone "${params.time_zone}" \
+      --start_time "${params.start_time}" \
       --zt_0 "${params.zt_0}" \
       --lib "${params.lib}" \
       --outdir "."
@@ -126,5 +136,5 @@ workflow {
 
     RUN_BOUT_ANALYSIS(LOAD_DATA.out.loaded)
 
-    LAST_TIMESTAMP(LOAD_DATA.out.loaded)
+    LAST_TIMESTAMP(LOAD_DATA.out.timestamp)
 }
