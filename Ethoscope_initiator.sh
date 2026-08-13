@@ -25,5 +25,5 @@ cd <path/to/working/directory>
 
 #Run the nextflow script
 nextflow run ./Scripts/Ethoscope_nextflow.nf \
-    -c ./nextflow.config \
+    -c ./slurm.config \
     -params-file ./config.yaml
