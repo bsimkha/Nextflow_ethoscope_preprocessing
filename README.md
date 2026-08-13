@@ -98,7 +98,6 @@ Running pipeline:
 nextflow run ./Scripts/Ethoscope_nextflow.nf \
     -c ./local.config \
     -params-file ./config.yaml
-
 ```
 Nextflow usually shows workflow progress while running
 ### HPC users
