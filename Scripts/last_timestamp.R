@@ -9,7 +9,10 @@ get_arg <- function(flag, default = NA_character_) {
 lib             <- get_arg("--lib")
 dt_trimmed_file  <- get_arg("--dt_trimmed")
 metadata_file    <- get_arg("--metadata")
+result_info_file <- get_arg("--result_info")
 exp_id           <- get_arg("--exp_id")
+time_zone        <- as.numeric(get_arg("--time_zone"))
+start_time       <- as.numeric(get_arg("--start_time"))
 zt_0             <- as.numeric(get_arg("--zt_0"))
 outdir           <- get_arg("--outdir", ".")
 
@@ -25,6 +28,7 @@ suppressPackageStartupMessages(library(data.table))
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)
 dt_trimmed     <- readRDS(dt_trimmed_file)
 Metadata_found <- readRDS(metadata_file)
+result_info    <- readRDS(result_info_file)
 
 if (!is.data.table(dt_trimmed))     dt_trimmed     <- as.data.table(dt_trimmed)
 if (!is.data.table(Metadata_found)) Metadata_found <- as.data.table(Metadata_found)
@@ -34,19 +38,58 @@ if (!"datetime" %in% names(Metadata_found)) {
 
 # t = 0 already represents zt_0 (time zone already accounted for upstream).
 # Anchor t = 0 at zt_0, on the setup date.
-setup_dates <- unique(Metadata_found[, .(id, datetime)])
+setup_dates <- unique(Metadata_found[, .(id, datetime, machine_name)])
 setup_dates[, date := as.Date(datetime)]
 setup_dates[, setup_anchor := as.POSIXct(paste(date, "00:00:00"), tz = "UTC") + zt_0 * 3600]
 
 # Last REAL (non-missing) timestamp per id
+first_t <- dt_trimmed[missing == FALSE, .(first_t = min(t)), by = id]
 last_t <- dt_trimmed[missing == FALSE, .(last_t = max(t)), by = id]
 
-result <- merge(last_t, setup_dates[, .(id, setup_anchor)], by = "id", all.x = TRUE)
-result[, last_timestamp := as.character(format(
-  setup_anchor + last_t,
+result <- merge(first_t, last_t, by = "id", all.x = TRUE)
+result <- merge(result, setup_dates[, .(id, setup_anchor, machine_name)], by = "id", all.x = TRUE)
+
+result[, start_date := setup_anchor + start_time*3600]
+result[, first_timestamp := setup_anchor + first_t]
+result[, last_timestamp := setup_anchor + last_t]
+
+#Fix afte and timestamps in result based on time zone (if needed)
+if (time_zone < 0 & any(result_info$hour < abs(time_zone))) {
+  result[
+    machine_name %in% result_info[hour < abs(time_zone), machine_name],
+    `:=`(start_date = start_date - lubridate::days(1), #Subtract 1 day from GMT date
+         first_timestamp = first_timestamp - lubridate::days(1), #Subtract 1 day from GMT date
+         last_timestamp = last_timestamp - lubridate::days(1)) #Subtract 1 day from GMT date
+  ]
+}
+
+if (time_zone > 0 & any(result_info$hour >= (24 - time_zone))) {
+  result[
+    machine_name %in% result_info[hour >= (24 - time_zone), machine_name],
+    `:=`(start_date = start_date + lubridate::days(1), #Add 1 day to GMT date
+         last_timestamp = last_timestamp + lubridate::days(1), #Add 1 day to GMT date
+         last_timestamp = last_timestamp + lubridate::days(1)) #Add 1 day to GMT date
+  ]
+}
+
+result[, first_timestamp := format(
+  first_timestamp,
   format = "%Y-%m-%d %H:%M:%S",
   tz = "UTC"
-))]
+)]
 
-out <- result[, .(id, last_t, last_timestamp)]
+result[, last_timestamp := format(
+  last_timestamp,
+  format = "%Y-%m-%d %H:%M:%S",
+  tz = "UTC"
+)]
+
+result[, start_date := format(
+  start_date,
+  format = "%Y-%m-%d",
+  tz = "UTC"
+)]
+
+
+out <- result[, .(id, last_t, start_date, first_timestamp, last_timestamp)]
 fwrite(out, file.path(outdir, paste0(exp_id, "_last_timestamp.csv")))
